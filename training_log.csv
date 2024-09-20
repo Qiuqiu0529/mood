@@ -1,0 +1,27 @@
+Time,Model,Feature_Type,Accuracy,Classification_Report
+2024-09-20 20:48:19, Softmax ,TF-IDF,0.8213911518805995,"              precision    recall  f1-score   support
+
+           0       0.86      0.86      0.86     26457
+           1       0.82      0.87      0.84     31983
+           2       0.71      0.61      0.66      8227
+           3       0.85      0.82      0.83     12664
+           4       0.79      0.81      0.80     10666
+           5       0.69      0.68      0.68      3537
+
+    accuracy                           0.82     93534
+   macro avg       0.79      0.77      0.78     93534
+weighted avg       0.82      0.82      0.82     93534
+"
+2024-09-20 20:50:36, Softmax ,Bag of Words,0.8479055744435179,"              precision    recall  f1-score   support
+
+           0       0.89      0.89      0.89     26457
+           1       0.84      0.90      0.87     31983
+           2       0.76      0.61      0.68      8227
+           3       0.91      0.81      0.86     12664
+           4       0.82      0.83      0.83     10666
+           5       0.66      0.85      0.74      3537
+
+    accuracy                           0.85     93534
+   macro avg       0.82      0.81      0.81     93534
+weighted avg       0.85      0.85      0.85     93534
+"

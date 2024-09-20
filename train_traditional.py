@@ -15,7 +15,7 @@ from sklearn import svm
 
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
-
+import csv
 
 df = pd.read_csv('processed_text.csv')
 label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
@@ -23,7 +23,7 @@ print(len(df))
 features = df['text']
 labels = df['label']
 
-X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.15)
+X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3)
 print("train:", len(X_train))
 print("test:", len(X_test))
 
@@ -72,6 +72,20 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title):
     plt.ylabel('True')
     plt.show()
 
+
+csv_file = 'training_log.csv'
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Time", "Model", "Feature_Type", "Accuracy", "Classification_Report"])
+
+def log_metrics(model_name, feature_type, acc,class_report ):
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([current_time, model_name, feature_type, acc, class_report])
+
+
 def softmax():
     title = " Softmax "
     softmax = LogisticRegression(multi_class='multinomial', solver='lbfgs', max_iter=30)
@@ -79,9 +93,10 @@ def softmax():
     softmax.fit(X_train_tf, y_train)
     y_pred_tf = softmax.predict(X_test_tf)
     accuracy_tf = accuracy_score(y_test, y_pred_tf)
-
+    report_tf=classification_report(y_test, y_pred_tf)
+    log_metrics(title,"TF-IDF",accuracy_tf,report_tf)
     print(accuracy_tf)
-    print(classification_report(y_test, y_pred_tf))
+    print(report_tf)
     draw_confusion_matrix_hitmap(y_test, y_pred_tf,title+"TF-IDF")
 
     #Bag of Words
@@ -89,17 +104,19 @@ def softmax():
     softmax.fit(X_train_bag, y_train)
     y_pred_bag = softmax.predict(X_test_bag)
     accuracy_bag = accuracy_score(y_test, y_pred_bag)
+    report_bag=classification_report(y_test, y_pred_bag)
+    log_metrics(title,"Bag of Words",accuracy_bag,report_bag)
     print(accuracy_bag)
-    print(classification_report(y_test, y_pred_bag))
+    print(report_bag)
     draw_confusion_matrix_hitmap(y_test, y_pred_bag, title+"Bag of Words")
 
     draw_accuracy_comparison(accuracy_tf, accuracy_bag,title)
 
-# start_time = time.time()
-# softmax()
-# end_time = time.time()
-# execution_time = end_time - start_time
-# print(f"Softmax{execution_time}s")
+start_time = time.time()
+softmax()
+end_time = time.time()
+execution_time = end_time - start_time
+print(f"Softmax{execution_time}s")
 
 def KNN():
     title=" KNN "
@@ -178,4 +195,4 @@ def SVM():
 
     draw_accuracy_comparison(accuracy_tf, accuracy_bag,title)
 
-SVM()
+# SVM()
