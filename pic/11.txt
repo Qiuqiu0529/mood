@@ -1,0 +1,137 @@
+20：18
+D:\CourseCode\MachingLearning\mood\venv\Scripts\python.exe D:\CourseCode\MachingLearning\mood\train.py 
+311778
+train: 280600
+test: 31178
+Selected Features: [    31    193    614 ... 906084 906085 906121]
+<Compressed Sparse Row sparse matrix of dtype 'int64'
+	with 1634875 stored elements and shape (280600, 47822)>
+  Coords	Values
+  (0, 18071)	1
+  (0, 14121)	1
+  (0, 35787)	1
+  (0, 24317)	1
+  (0, 15483)	1
+  (0, 2986)	1
+  (1, 2986)	1
+  (1, 34696)	1
+  (1, 24454)	1
+  (2, 35787)	1
+  (2, 30402)	1
+  (2, 7750)	1
+  (2, 30056)	1
+  (2, 14660)	1
+  (2, 9847)	1
+  (2, 10067)	1
+  (2, 46604)	1
+  (3, 17799)	1
+  (3, 14408)	1
+  (3, 21506)	1
+  (3, 34027)	1
+  (3, 5153)	1
+  (3, 18156)	1
+  (4, 9847)	1
+  (4, 10336)	1
+  :	:
+  (280595, 10409)	1
+  (280595, 32143)	1
+  (280595, 19812)	1
+  (280595, 34598)	1
+  (280596, 42717)	1
+  (280596, 7721)	1
+  (280596, 26485)	1
+  (280596, 21645)	1
+  (280596, 34563)	1
+  (280597, 31113)	1
+  (280597, 19593)	1
+  (280597, 34573)	1
+  (280597, 26483)	1
+  (280598, 42117)	1
+  (280598, 14417)	1
+  (280598, 14076)	1
+  (280598, 45278)	1
+  (280598, 28423)	1
+  (280598, 6095)	1
+  (280598, 1658)	1
+  (280598, 36917)	1
+  (280599, 11158)	1
+  (280599, 18135)	1
+  (280599, 2887)	1
+  (280599, 28476)	1
+Selected Features: [    1     2     4 ... 47819 47820 47821]
+D:\CourseCode\MachingLearning\mood\venv\Lib\site-packages\sklearn\linear_model\_logistic.py:1247: FutureWarning: 'multi_class' was deprecated in version 1.5 and will be removed in 1.7. From then on, it will always use 'multinomial'. Leave it to its default value to avoid this warning.
+  warnings.warn(
+D:\CourseCode\MachingLearning\mood\venv\Lib\site-packages\sklearn\linear_model\_logistic.py:469: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+0.8193918788889601
+              precision    recall  f1-score   support
+
+           0       0.84      0.87      0.86      8761
+           1       0.83      0.86      0.84     10664
+           2       0.70      0.61      0.65      2656
+           3       0.86      0.80      0.83      4258
+           4       0.79      0.82      0.81      3670
+           5       0.70      0.60      0.65      1169
+
+    accuracy                           0.82     31178
+   macro avg       0.79      0.76      0.77     31178
+weighted avg       0.82      0.82      0.82     31178
+
+D:\CourseCode\MachingLearning\mood\venv\Lib\site-packages\sklearn\linear_model\_logistic.py:1247: FutureWarning: 'multi_class' was deprecated in version 1.5 and will be removed in 1.7. From then on, it will always use 'multinomial'. Leave it to its default value to avoid this warning.
+  warnings.warn(
+D:\CourseCode\MachingLearning\mood\venv\Lib\site-packages\sklearn\linear_model\_logistic.py:469: ConvergenceWarning: lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+0.8489319391878889
+              precision    recall  f1-score   support
+
+           0       0.91      0.87      0.89      8761
+           1       0.84      0.91      0.87     10664
+           2       0.75      0.62      0.68      2656
+           3       0.89      0.84      0.86      4258
+           4       0.80      0.87      0.83      3670
+           5       0.72      0.70      0.71      1169
+
+    accuracy                           0.85     31178
+   macro avg       0.82      0.80      0.81     31178
+weighted avg       0.85      0.85      0.85     31178
+
+              precision    recall  f1-score   support
+
+           0       0.77      0.81      0.79      8761
+           1       0.72      0.84      0.77     10664
+           2       0.59      0.50      0.54      2656
+           3       0.81      0.69      0.74      4258
+           4       0.78      0.63      0.69      3670
+           5       0.65      0.38      0.48      1169
+
+    accuracy                           0.74     31178
+   macro avg       0.72      0.64      0.67     31178
+weighted avg       0.74      0.74      0.73     31178
+
+              precision    recall  f1-score   support
+
+           0       0.71      0.82      0.76      8761
+           1       0.71      0.82      0.76     10664
+           2       0.55      0.44      0.49      2656
+           3       0.82      0.59      0.69      4258
+           4       0.76      0.57      0.65      3670
+           5       0.58      0.40      0.47      1169
+
+    accuracy                           0.71     31178
+   macro avg       0.69      0.61      0.64     31178
+weighted avg       0.71      0.71      0.70     31178
+
+
+Process finished with exit code 0
