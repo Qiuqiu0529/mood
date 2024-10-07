@@ -200,4 +200,3 @@ train_util.log_metrics(best_model_name, feature_type + ' Test', test_acc, test_c
 # Draw confusion matrix for test set
 title = f"{best_model_name} ({feature_type}) Test Set"
 train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title)
-
