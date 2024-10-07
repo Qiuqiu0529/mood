@@ -15,70 +15,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 
 
+import fasttext
+import fasttext.util
+from itertools import product
+
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import csv
-
-df = pd.read_csv('processed_text.csv')
-label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
-print(len(df))
-features = df['text']
-labels = df['label']
-
-data_by_label = df.groupby('label')
-X_balanced = []
-y_balanced = []
-min_count = labels.value_counts().min()
-
-for label, group in data_by_label:
-    if len(group) > min_count:
-        group = group.sample(n=min_count, random_state=0)
-
-    X_balanced.extend(group['text'].tolist())
-    y_balanced.extend(group['label'].tolist())
-
-X_train, X_temp, y_train, y_temp = train_test_split(X_balanced, y_balanced, test_size=0.3, random_state=0)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=0)
-
-
-print("train:", len(X_train))
-print("Train set class distribution:", Counter(y_train))
-print("val:", len(X_val))
-print("Validation set class distribution:", Counter(y_val))
-print("test:", len(X_test))
-print("Test set class distribution:", Counter(y_test))
-
-
-#TF-IDF
-vectorizer = TfidfVectorizer(ngram_range=(1,2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
-X_train_tf = vectorizer.fit_transform(X_train)
-X_val_tf = vectorizer.transform(X_val)
-X_test_tf = vectorizer.transform(X_test)
-
-f_classif(X_train_tf,y_train)
-selector = SelectKBest(f_classif, k=min(20000,X_train_tf.shape[1]))
-selector.fit(X_train_tf, y_train)
-selected_features = selector.get_support(indices=True)
-print("Selected Features:", selected_features)
-X_train_tf = selector.transform(X_train_tf)
-X_val_tf=selector.transform(X_val_tf)
-X_test_tf = selector.transform(X_test_tf)
-
-#Bag of Words
-vectorizer_bag=CountVectorizer(ngram_range=(1, 2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
-X_train_bag = vectorizer_bag.fit_transform(X_train)
-X_val_bag = vectorizer_bag.transform(X_val)
-X_test_bag = vectorizer_bag.transform(X_test)
-# print(X_train_bag)
-
-f_classif(X_train_bag,y_train)
-selector1 = SelectKBest(f_classif, k=min(20000,X_train_bag.shape[1]))
-selector1.fit(X_train_bag, y_train)
-selected_features_bag = selector1.get_support(indices=True)
-print("Selected Features:", selected_features_bag)
-X_train_bag = selector1.transform(X_train_bag)
-X_val_bag = selector1.transform(X_val_bag)
-X_test_bag = selector1.transform(X_test_bag)
 
 def draw_accuracy_comparison(accuracy_tf, accuracy_bag,title):
     labels = ['TF-IDF', 'Bag-of-Words']
@@ -125,6 +68,101 @@ def log_metrics(model_name, feature_type, acc, class_report):
         with open(csv_file, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(data)
+
+
+df = pd.read_csv('processed_text.csv')
+label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
+print(len(df))
+features = df['text']
+labels = df['label']
+
+data_by_label = df.groupby('label')
+X_balanced = []
+y_balanced = []
+min_count = labels.value_counts().min()
+
+for label, group in data_by_label:
+    if len(group) > min_count:
+        group = group.sample(n=min_count, random_state=0)
+
+    X_balanced.extend(group['text'].tolist())
+    y_balanced.extend(group['label'].tolist())
+
+X_train, X_temp, y_train, y_temp = train_test_split(X_balanced, y_balanced, test_size=0.3, random_state=0)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=0)
+print("train:", len(X_train))
+print("Train set class distribution:", Counter(y_train))
+print("val:", len(X_val))
+print("Validation set class distribution:", Counter(y_val))
+print("test:", len(X_test))
+print("Test set class distribution:", Counter(y_test))
+
+
+def convert_to_fasttext_format(X, y, filepath):
+    with open(filepath, 'w') as f:
+        for text, label in zip(X, y):
+            f.write(f"__label__{label} {text}\n")
+
+convert_to_fasttext_format(X_train, y_train, 'train_fasttext.txt')
+convert_to_fasttext_format(X_val, y_val, 'val_fasttext.txt')
+convert_to_fasttext_format(X_test, y_test, 'test_fasttext.txt')
+
+params = {
+    'lr': [0.1, 0.5, 0.8],
+    'epoch': [20, 30, 50],
+    'wordNgrams': [1, 2, 3],
+    'dim': [50, 100, 200],
+    'loss': ['softmax', 'ova'],
+}
+best_acc = 0
+best_params = None
+
+for param_combination in product(*params.values()):
+    param_dict = dict(zip(params.keys(), param_combination))
+    print(f"Training FastText with params: {param_dict}")
+    model = fasttext.train_supervised(input='train_fasttext.txt', **param_dict)
+    val_acc = model.test('val_fasttext.txt')[1]
+    print(f"Validation Accuracy: {val_acc}")
+    if val_acc > best_acc:
+        best_acc = val_acc
+        best_params = param_dict
+
+print(f"Best Validation Accuracy: {best_acc}")
+print(f"Best Parameters: {best_params}")
+
+#tradition
+
+#TF-IDF
+vectorizer = TfidfVectorizer(ngram_range=(1,2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
+X_train_tf = vectorizer.fit_transform(X_train)
+X_val_tf = vectorizer.transform(X_val)
+X_test_tf = vectorizer.transform(X_test)
+
+f_classif(X_train_tf,y_train)
+selector = SelectKBest(f_classif, k=min(20000,X_train_tf.shape[1]))
+selector.fit(X_train_tf, y_train)
+selected_features = selector.get_support(indices=True)
+print("Selected Features:", selected_features)
+X_train_tf = selector.transform(X_train_tf)
+X_val_tf=selector.transform(X_val_tf)
+X_test_tf = selector.transform(X_test_tf)
+
+#Bag of Words
+vectorizer_bag=CountVectorizer(ngram_range=(1, 2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
+X_train_bag = vectorizer_bag.fit_transform(X_train)
+X_val_bag = vectorizer_bag.transform(X_val)
+X_test_bag = vectorizer_bag.transform(X_test)
+# print(X_train_bag)
+
+f_classif(X_train_bag,y_train)
+selector1 = SelectKBest(f_classif, k=min(20000,X_train_bag.shape[1]))
+selector1.fit(X_train_bag, y_train)
+selected_features_bag = selector1.get_support(indices=True)
+print("Selected Features:", selected_features_bag)
+X_train_bag = selector1.transform(X_train_bag)
+X_val_bag = selector1.transform(X_val_bag)
+X_test_bag = selector1.transform(X_test_bag)
+
 
 
 #old version
@@ -181,6 +219,14 @@ models = {
             'weights': ['uniform', 'distance']
         }
     },
+    'Decision Tree': {
+        'model': DecisionTreeClassifier(),
+        'params': {
+            'max_depth': [None, 10, 20, 30],
+            'min_samples_split': [2, 5, 10],
+            'criterion': ['gini', 'entropy']
+        }
+    }
     # 'SVM': {
     #     'model': SVC(),
     #     'params': {
@@ -197,6 +243,7 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
     grid = GridSearchCV(model, params, cv=5, scoring='accuracy', n_jobs=-1)
     grid.fit(X_train, y_train)
     print(f"Best parameters for {model_name}: {grid.best_params_}")
+
     best_model = grid.best_estimator_
     y_pred = best_model.predict(X_val)
     acc = accuracy_score(y_val, y_pred)
