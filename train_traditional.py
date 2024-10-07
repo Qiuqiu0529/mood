@@ -2,7 +2,7 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import f_classif
@@ -14,121 +14,14 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 
-
-import fasttext
-import fasttext.util
-from itertools import product
-
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import csv
 
-def draw_accuracy_comparison(accuracy_tf, accuracy_bag,title):
-    labels = ['TF-IDF', 'Bag-of-Words']
-    accuracies = [accuracy_tf, accuracy_bag]
-    plt.bar(labels, accuracies)
-    plt.xlabel('Feature Representation')
-    plt.ylabel('Accuracy')
-    plt.title(title+'Accuracy Comparison')
-    plt.show()
+import train_util
 
-def draw_accuracy_comparison(accuracies, title):
-    labels = list(accuracies.keys())
-    values = list(accuracies.values())
-    plt.bar(labels, values)
-    plt.xlabel('Model')
-    plt.ylabel('Accuracy')
-    plt.title(title + ' Accuracy Comparison')
-    plt.show()
+X_train, X_val, X_test, y_train, y_val, y_test = train_util.split_data()
 
-
-def draw_confusion_matrix_hitmap(y_test, y_pred,title):
-    cm_tf = confusion_matrix(y_test, y_pred)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm_tf, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.values(),
-                yticklabels=label_mapping.values())
-    plt.title(title+" Confusion Matrix")
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.show()
-
-
-csv_file = 'training_log.csv'
-
-def log_metrics(model_name, feature_type, acc, class_report):
-    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    header = ['Time', 'Model', 'Feature Type', 'Accuracy', 'Classification Report']
-    data = [current_time, model_name, feature_type, acc, class_report]
-    try:
-        with open(csv_file, mode='x', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(header)
-            writer.writerow(data)
-    except FileExistsError:
-        with open(csv_file, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(data)
-
-
-df = pd.read_csv('processed_text.csv')
-label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
-print(len(df))
-features = df['text']
-labels = df['label']
-
-data_by_label = df.groupby('label')
-X_balanced = []
-y_balanced = []
-min_count = labels.value_counts().min()
-
-for label, group in data_by_label:
-    if len(group) > min_count:
-        group = group.sample(n=min_count, random_state=0)
-
-    X_balanced.extend(group['text'].tolist())
-    y_balanced.extend(group['label'].tolist())
-
-X_train, X_temp, y_train, y_temp = train_test_split(X_balanced, y_balanced, test_size=0.3, random_state=0)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=0)
-print("train:", len(X_train))
-print("Train set class distribution:", Counter(y_train))
-print("val:", len(X_val))
-print("Validation set class distribution:", Counter(y_val))
-print("test:", len(X_test))
-print("Test set class distribution:", Counter(y_test))
-
-
-def convert_to_fasttext_format(X, y, filepath):
-    with open(filepath, 'w') as f:
-        for text, label in zip(X, y):
-            f.write(f"__label__{label} {text}\n")
-
-convert_to_fasttext_format(X_train, y_train, 'train_fasttext.txt')
-convert_to_fasttext_format(X_val, y_val, 'val_fasttext.txt')
-convert_to_fasttext_format(X_test, y_test, 'test_fasttext.txt')
-
-params = {
-    'lr': [0.1, 0.5, 0.8],
-    'epoch': [20, 30, 50],
-    'wordNgrams': [1, 2, 3],
-    'dim': [50, 100, 200],
-    'loss': ['softmax', 'ova'],
-}
-best_acc = 0
-best_params = None
-
-for param_combination in product(*params.values()):
-    param_dict = dict(zip(params.keys(), param_combination))
-    print(f"Training FastText with params: {param_dict}")
-    model = fasttext.train_supervised(input='train_fasttext.txt', **param_dict)
-    val_acc = model.test('val_fasttext.txt')[1]
-    print(f"Validation Accuracy: {val_acc}")
-    if val_acc > best_acc:
-        best_acc = val_acc
-        best_params = param_dict
-
-print(f"Best Validation Accuracy: {best_acc}")
-print(f"Best Parameters: {best_params}")
 
 #tradition
 
@@ -166,30 +59,30 @@ X_test_bag = selector1.transform(X_test_bag)
 
 
 #old version
-def softmax():
-    title = " Softmax "
-    softmax = LogisticRegression(multinomial='multinomial', solver='lbfgs', max_iter=30)
-    #TF-IDF
-    softmax.fit(X_train_tf, y_train)
-    y_pred_tf = softmax.predict(X_test_tf)
-    accuracy_tf = accuracy_score(y_test, y_pred_tf)
-    report_tf=classification_report(y_test, y_pred_tf)
-    log_metrics(title,"TF-IDF",accuracy_tf,report_tf)
-    print(accuracy_tf)
-    print(report_tf)
-    draw_confusion_matrix_hitmap(y_test, y_pred_tf,title+"TF-IDF")
-
-    #Bag of Words
-    softmax = LogisticRegression(multinomial='multinomial', solver='lbfgs', max_iter=30)
-    softmax.fit(X_train_bag, y_train)
-    y_pred_bag = softmax.predict(X_test_bag)
-    accuracy_bag = accuracy_score(y_test, y_pred_bag)
-    report_bag=classification_report(y_test, y_pred_bag)
-    log_metrics(title,"Bag of Words",accuracy_bag,report_bag)
-    print(accuracy_bag)
-    print(report_bag)
-    draw_confusion_matrix_hitmap(y_test, y_pred_bag, title+"Bag of Words")
-    draw_accuracy_comparison(accuracy_tf, accuracy_bag,title)
+# def softmax():
+#     title = " Softmax "
+#     softmax = LogisticRegression(multinomial='multinomial', solver='lbfgs', max_iter=30)
+#     #TF-IDF
+#     softmax.fit(X_train_tf, y_train)
+#     y_pred_tf = softmax.predict(X_test_tf)
+#     accuracy_tf = accuracy_score(y_test, y_pred_tf)
+#     report_tf=classification_report(y_test, y_pred_tf)
+#     log_metrics(title,"TF-IDF",accuracy_tf,report_tf)
+#     print(accuracy_tf)
+#     print(report_tf)
+#     draw_confusion_matrix_hitmap(y_test, y_pred_tf,title+"TF-IDF")
+#
+#     #Bag of Words
+#     softmax = LogisticRegression(multinomial='multinomial', solver='lbfgs', max_iter=30)
+#     softmax.fit(X_train_bag, y_train)
+#     y_pred_bag = softmax.predict(X_test_bag)
+#     accuracy_bag = accuracy_score(y_test, y_pred_bag)
+#     report_bag=classification_report(y_test, y_pred_bag)
+#     log_metrics(title,"Bag of Words",accuracy_bag,report_bag)
+#     print(accuracy_bag)
+#     print(report_bag)
+#     draw_confusion_matrix_hitmap(y_test, y_pred_bag, title+"Bag of Words")
+#     draw_accuracy_comparison(accuracy_tf, accuracy_bag,title)
 
 # start_time = time.time()
 # softmax()
@@ -251,10 +144,10 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
     class_report = classification_report(y_val, y_pred)
     print(f"Classification Report:\n{class_report}")
     # Log metrics
-    log_metrics(model_name, feature_type, acc, class_report)
+    train_util.log_metrics(model_name, feature_type, acc, class_report)
     # Draw confusion matrix
     title = f"{model_name} ({feature_type})"
-    draw_confusion_matrix_hitmap(y_val, y_pred, title)
+    train_util.draw_confusion_matrix_hitmap(y_val, y_pred, title)
     return acc
 
 acc_tf = {}
@@ -271,8 +164,8 @@ for model_name, model_info in models.items():
                                    X_train_bag, y_train, X_val_bag, y_val, 'Bag-of-Words')
     acc_bag[model_name] = acc
 
-draw_accuracy_comparison(acc_tf, 'TF-IDF')
-draw_accuracy_comparison(acc_bag, 'Bag-of-Words')
+train_util.draw_accuracy_comparison(acc_tf, 'TF-IDF')
+train_util.draw_accuracy_comparison(acc_bag, 'Bag-of-Words')
 
 best_model_name_tf = max(acc_tf, key=acc_tf.get)
 best_model_name_bag = max(acc_bag, key=acc_bag.get)
@@ -303,7 +196,8 @@ print(f"Test Accuracy for {best_model_name} with {feature_type} features: {test_
 test_class_report = classification_report(y_test, y_pred_test)
 print(f"Test Classification Report:\n{test_class_report}")
 # Log test metrics
-log_metrics(best_model_name, feature_type + ' Test', test_acc, test_class_report)
+train_util.log_metrics(best_model_name, feature_type + ' Test', test_acc, test_class_report)
 # Draw confusion matrix for test set
 title = f"{best_model_name} ({feature_type}) Test Set"
-draw_confusion_matrix_hitmap(y_test, y_pred_test, title)
+train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title)
+
