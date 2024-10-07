@@ -31,7 +31,7 @@ nltk.download('punkt')
 
 with open('stopwords-en.txt', 'r',encoding='utf-8') as f:
     stop_words = set(f.read().splitlines())
-stop_words.update({'feel', 'go', 'one','make', 'know', 'im', 'think','time'})
+stop_words.update({'feel', 'go', 'one','make', 'know', 'im', 'think','time',})
 
 #print(stop_words)
 

@@ -1,6 +1,7 @@
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
+from collections import Counter
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -23,34 +24,59 @@ print(len(df))
 features = df['text']
 labels = df['label']
 
-X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3)
+data_by_label = df.groupby('label')
+X_balanced = []
+y_balanced = []
+min_count = labels.value_counts().min()
+
+for label, group in data_by_label:
+    if len(group) > min_count:
+        group = group.sample(n=min_count, random_state=0)
+
+    X_balanced.extend(group['text'].tolist())
+    y_balanced.extend(group['label'].tolist())
+
+X_train, X_temp, y_train, y_temp = train_test_split(X_balanced, y_balanced, test_size=0.3, random_state=0)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=0)
+
+
 print("train:", len(X_train))
+print("Train set class distribution:", Counter(y_train))
+print("val:", len(X_val))
+print("Validation set class distribution:", Counter(y_val))
 print("test:", len(X_test))
+print("Test set class distribution:", Counter(y_test))
 
 
 #TF-IDF
 vectorizer = TfidfVectorizer(ngram_range=(1,2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
 X_train_tf = vectorizer.fit_transform(X_train)
+X_val_tf = vectorizer.transform(X_val)
 X_test_tf = vectorizer.transform(X_test)
+
 f_classif(X_train_tf,y_train)
 selector = SelectKBest(f_classif, k=min(20000,X_train_tf.shape[1]))
 selector.fit(X_train_tf, y_train)
 selected_features = selector.get_support(indices=True)
 print("Selected Features:", selected_features)
 X_train_tf = selector.transform(X_train_tf)
+X_val_tf=selector.transform(X_val_tf)
 X_test_tf = selector.transform(X_test_tf)
 
 #Bag of Words
-vectorizer_bag=CountVectorizer()
+vectorizer_bag=CountVectorizer(ngram_range=(1, 2),analyzer='word',token_pattern=u"(?u)\\b\\w+\\b")
 X_train_bag = vectorizer_bag.fit_transform(X_train)
+X_val_bag = vectorizer_bag.transform(X_val)
 X_test_bag = vectorizer_bag.transform(X_test)
-print(X_train_bag)
+# print(X_train_bag)
+
 f_classif(X_train_bag,y_train)
 selector1 = SelectKBest(f_classif, k=min(20000,X_train_bag.shape[1]))
 selector1.fit(X_train_bag, y_train)
 selected_features_bag = selector1.get_support(indices=True)
 print("Selected Features:", selected_features_bag)
 X_train_bag = selector1.transform(X_train_bag)
+X_val_bag = selector1.transform(X_val_bag)
 X_test_bag = selector1.transform(X_test_bag)
 
 def draw_accuracy_comparison(accuracy_tf, accuracy_bag,title):
@@ -74,9 +100,6 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title):
 
 
 csv_file = 'training_log.csv'
-with open(csv_file, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(["Time", "Model", "Feature_Type", "Accuracy", "Classification_Report"])
 
 def log_metrics(model_name, feature_type, acc,class_report ):
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
@@ -84,6 +107,8 @@ def log_metrics(model_name, feature_type, acc,class_report ):
     with open(csv_file, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([current_time, model_name, feature_type, acc, class_report])
+
+
 
 
 def softmax():
