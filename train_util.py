@@ -36,10 +36,10 @@ def draw_accuracy_comparison(accuracies, title, save_path=None):
         plt.show()
 
 
-def draw_confusion_matrix_hitmap(y_test, y_pred,title, save_path=None):
-    cm_tf = confusion_matrix(y_test, y_pred)
+def draw_confusion_matrix_hitmap(y_test, y_pred,title,  save_path=None,csv_save_path = 'confusion_matrix.csv'):
+    cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm_tf, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.values(),
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.values(),
                 yticklabels=label_mapping.values())
     plt.title(title+" Confusion Matrix")
     plt.xlabel('Predicted')
@@ -50,9 +50,21 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title, save_path=None):
     else:
         plt.show()
 
+    if csv_save_path:
+        cm_df = pd.DataFrame(cm, index=label_mapping.values(), columns=label_mapping.values())
+        cm_df.index.name = 'True Label'
+        cm_df.columns.name = 'Predicted Label'
 
+        model_info = pd.DataFrame([[f"Model: {title}"]], columns=[cm_df.columns[0]])
+        empty_row = pd.DataFrame([[""] * len(cm_df.columns)], columns=cm_df.columns)
 
+        cm_with_info = pd.concat([model_info, empty_row, cm_df, empty_row])
 
+        try:
+            cm_with_info.to_csv(csv_save_path, mode='a', index=True, header=False, encoding='utf-8-sig')
+        except FileNotFoundError:
+            cm_with_info.to_csv(csv_save_path, index=True, header=True, encoding='utf-8-sig')
+        print(f"Confusion matrix CSV for {title} saved to: {csv_save_path}")
 
 def log_metrics(model_name, feature_type, acc, class_report, train_time,
                 params=None, test_acc=None, cm_path=None,csv_file = 'training_log_new.csv'):

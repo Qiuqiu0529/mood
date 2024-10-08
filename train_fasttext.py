@@ -88,5 +88,6 @@ log_metrics(
     train_time=0,
     params=best_params,
     test_acc=test_acc,
-    cm_path=test_cm_path
+    cm_path=test_cm_path,
+    csv_file='training_log_fasttext.csv'
 )

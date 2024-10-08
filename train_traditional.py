@@ -1,6 +1,4 @@
 import time
-import pandas as pd
-import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -148,7 +146,8 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
     # Draw confusion matrix
     title = f"{model_name} ({feature_type})"
     cm_path = f"{train_util.default_save_path}/{model_name}_{feature_type}_val_confusion_matrix.png"
-    train_util.draw_confusion_matrix_hitmap(y_val, y_pred, title,cm_path)
+    train_util.draw_confusion_matrix_hitmap(y_val, y_pred, title, cm_path)
+
 
     # Log metrics
     train_util.log_metrics(model_name, feature_type, acc, class_report, train_time, params=grid.best_params_,

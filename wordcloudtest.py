@@ -4,6 +4,7 @@ from wordcloud import WordCloud
 import time
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
+from train_util import default_save_path
 
 df = pd.read_csv('processed_text.csv')
 label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
@@ -20,7 +21,7 @@ for idx, label in enumerate(category_text.keys()):
         if score > 0.1:
             filtered_category_word_freq[label][word] = score
 
-
+save_path=default_save_path+'/'
 
 for label, freq_dict in filtered_category_word_freq.items():
     if not freq_dict:
@@ -43,4 +44,8 @@ for label, freq_dict in filtered_category_word_freq.items():
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.title(f"{label_mapping[label]}", fontsize=20)
-    plt.show()
+    if save_path:
+        plt.savefig(save_path+f"{label_mapping[label]}_wordCloud.png")
+        plt.close()
+    else:
+        plt.show()
