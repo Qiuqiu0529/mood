@@ -91,3 +91,14 @@ log_metrics(
     cm_path=test_cm_path,
     csv_file='training_log_fasttext.csv'
 )
+
+log_metrics(
+    model_name='FastText',
+    feature_type='Best Model Test',
+    acc=best_acc,
+    class_report=test_class_report,
+    train_time=0,
+    params=best_params,
+    test_acc=test_acc,
+    cm_path=test_cm_path,
+)

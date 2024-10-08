@@ -1,0 +1,144 @@
+Time,Model,Feature Type,Accuracy(val/test),Test Accuracy,Classification Report,Train Time (s),Best Params,Confusion Matrix Path
+2024/10/8 13:00,FastText,Best Model Test,0.84587367,0.849707658,"              precision    recall  f1-score   support
+
+     sadness       0.86      0.83      0.85      1743
+         joy       0.79      0.79      0.79      1600
+        love       0.86      0.84      0.85      1725
+       anger       0.89      0.89      0.89      1810
+        fear       0.83      0.82      0.83      1762
+    surprise       0.86      0.91      0.88      1793
+
+    accuracy                           0.85     10433
+   macro avg       0.85      0.85      0.85     10433
+weighted avg       0.85      0.85      0.85     10433
+",0,"{'lr': 0.5, 'epoch': 50, 'wordNgrams': 3, 'dim': 200, 'loss': 'ova'}",pic/FastText_Test_Confusion_Matrix.png
+2024/10/8 13:39,DistilBERT,Test Set,0.877791623,0.876641426,"              precision    recall  f1-score   support
+
+     sadness       0.90      0.84      0.87      1743
+         joy       0.88      0.77      0.82      1600
+        love       0.85      0.90      0.87      1725
+       anger       0.90      0.91      0.90      1810
+        fear       0.88      0.85      0.86      1762
+    surprise       0.87      0.98      0.92      1793
+
+    accuracy                           0.88     10433
+   macro avg       0.88      0.87      0.87     10433
+weighted avg       0.88      0.88      0.88     10433
+",0,,
+2024-10-08 13:47:44,Softmax,TF-IDF,0.8583341320808971,,"              precision    recall  f1-score   support
+
+           0       0.87      0.82      0.84      1719
+           1       0.83      0.78      0.80      1716
+           2       0.83      0.87      0.85      1781
+           3       0.89      0.88      0.88      1756
+           4       0.86      0.83      0.84      1702
+           5       0.87      0.97      0.92      1759
+
+    accuracy                           0.86     10433
+   macro avg       0.86      0.86      0.86     10433
+weighted avg       0.86      0.86      0.86     10433
+",7.974609375,"{'C': 1, 'penalty': 'l2'}",pic/Softmax_TF-IDF_val_confusion_matrix.png
+2024-10-08 13:47:44,Naive Bayes,TF-IDF,0.8152976133422793,,"              precision    recall  f1-score   support
+
+           0       0.83      0.81      0.82      1719
+           1       0.74      0.77      0.75      1716
+           2       0.80      0.81      0.80      1781
+           3       0.88      0.84      0.86      1756
+           4       0.81      0.81      0.81      1702
+           5       0.84      0.87      0.85      1759
+
+    accuracy                           0.82     10433
+   macro avg       0.82      0.82      0.82     10433
+weighted avg       0.82      0.82      0.82     10433
+",0.21560359001159668,{'alpha': 1.0},pic/Naive Bayes_TF-IDF_val_confusion_matrix.png
+2024-10-08 13:48:16,KNN,TF-IDF,0.722706795744273,,"              precision    recall  f1-score   support
+
+           0       0.73      0.73      0.73      1719
+           1       0.65      0.69      0.67      1716
+           2       0.71      0.75      0.73      1781
+           3       0.82      0.73      0.77      1756
+           4       0.70      0.71      0.70      1702
+           5       0.74      0.72      0.73      1759
+
+    accuracy                           0.72     10433
+   macro avg       0.72      0.72      0.72     10433
+weighted avg       0.73      0.72      0.72     10433
+",27.3293616771698,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_TF-IDF_val_confusion_matrix.png
+2024-10-08 13:48:55,Decision Tree,TF-IDF,0.8008243074858622,,"              precision    recall  f1-score   support
+
+           0       0.78      0.77      0.78      1719
+           1       0.79      0.70      0.74      1716
+           2       0.77      0.83      0.80      1781
+           3       0.84      0.83      0.83      1756
+           4       0.78      0.79      0.79      1702
+           5       0.85      0.87      0.86      1759
+
+    accuracy                           0.80     10433
+   macro avg       0.80      0.80      0.80     10433
+weighted avg       0.80      0.80      0.80     10433
+",38.38498568534851,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_TF-IDF_val_confusion_matrix.png
+2024-10-08 13:49:17,Softmax,Bag-of-Words,0.8592926291574811,,"              precision    recall  f1-score   support
+
+           0       0.87      0.83      0.85      1719
+           1       0.81      0.78      0.80      1716
+           2       0.84      0.85      0.85      1781
+           3       0.90      0.88      0.89      1756
+           4       0.87      0.83      0.85      1702
+           5       0.87      0.98      0.92      1759
+
+    accuracy                           0.86     10433
+   macro avg       0.86      0.86      0.86     10433
+weighted avg       0.86      0.86      0.86     10433
+",21.849181175231934,"{'C': 0.1, 'penalty': 'l2'}",pic/Softmax_Bag-of-Words_val_confusion_matrix.png
+2024-10-08 13:49:17,Naive Bayes,Bag-of-Words,0.8177897057413975,,"              precision    recall  f1-score   support
+
+           0       0.83      0.81      0.82      1719
+           1       0.76      0.75      0.75      1716
+           2       0.79      0.81      0.80      1781
+           3       0.87      0.83      0.85      1756
+           4       0.80      0.81      0.81      1702
+           5       0.85      0.90      0.87      1759
+
+    accuracy                           0.82     10433
+   macro avg       0.82      0.82      0.82     10433
+weighted avg       0.82      0.82      0.82     10433
+",0.1860668659210205,{'alpha': 1.0},pic/Naive Bayes_Bag-of-Words_val_confusion_matrix.png
+2024-10-08 13:49:49,KNN,Bag-of-Words,0.7212690501293971,,"              precision    recall  f1-score   support
+
+           0       0.66      0.70      0.68      1719
+           1       0.59      0.68      0.63      1716
+           2       0.71      0.78      0.74      1781
+           3       0.82      0.65      0.72      1756
+           4       0.76      0.70      0.73      1702
+           5       0.84      0.82      0.83      1759
+
+    accuracy                           0.72     10433
+   macro avg       0.73      0.72      0.72     10433
+weighted avg       0.73      0.72      0.72     10433
+",27.390056133270264,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_Bag-of-Words_val_confusion_matrix.png
+2024-10-08 13:50:16,Decision Tree,Bag-of-Words,0.8146266653886706,,"              precision    recall  f1-score   support
+
+           0       0.81      0.78      0.79      1719
+           1       0.79      0.73      0.76      1716
+           2       0.79      0.83      0.81      1781
+           3       0.85      0.85      0.85      1756
+           4       0.78      0.81      0.79      1702
+           5       0.86      0.88      0.87      1759
+
+    accuracy                           0.81     10433
+   macro avg       0.81      0.81      0.81     10433
+weighted avg       0.81      0.81      0.81     10433
+",26.762856245040894,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_Bag-of-Words_val_confusion_matrix.png
+2024-10-08 13:50:39,Softmax,Bag-of-Words Test,0.8607303747723569,0.8607303747723569,"              precision    recall  f1-score   support
+
+           0       0.86      0.82      0.84      1743
+           1       0.82      0.79      0.81      1600
+           2       0.85      0.86      0.86      1725
+           3       0.89      0.87      0.88      1810
+           4       0.87      0.83      0.85      1762
+           5       0.86      0.98      0.91      1793
+
+    accuracy                           0.86     10433
+   macro avg       0.86      0.86      0.86     10433
+weighted avg       0.86      0.86      0.86     10433
+",0,"{'C': 0.1, 'penalty': 'l2'}",pic/Softmax_Bag-of-Words_test_confusion_matrix.png

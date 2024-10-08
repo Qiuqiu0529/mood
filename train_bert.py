@@ -114,7 +114,7 @@ ax.set_xlabel('Steps')
 ax.set_ylabel('Loss/Accuracy')
 ax.set_title('Training and Validation Accuracy Curve')
 ax.legend()
-plt.savefig('distilbert_accuracy_curve.png')
+plt.savefig('pic/distilbert_accuracy_curve.png')
 plt.close()
 
 print("Evaluating on Test Set...")
