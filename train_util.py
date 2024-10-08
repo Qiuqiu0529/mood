@@ -2,23 +2,16 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_selection import f_classif
-from sklearn.feature_selection import SelectKBest
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
 
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import csv
+import os
 
 label_mapping = {0: 'sadness', 1: 'joy', 2: 'love', 3: 'anger', 4: 'fear', 5: 'surprise'}
+default_save_path='pic'
+os.makedirs(default_save_path, exist_ok=True)
 
 def draw_accuracy_comparison(accuracy_tf, accuracy_bag,title):
     labels = ['TF-IDF', 'Bag-of-Words']
@@ -29,17 +22,21 @@ def draw_accuracy_comparison(accuracy_tf, accuracy_bag,title):
     plt.title(title+'Accuracy Comparison')
     plt.show()
 
-def draw_accuracy_comparison(accuracies, title):
+def draw_accuracy_comparison(accuracies, title, save_path=None):
     labels = list(accuracies.keys())
     values = list(accuracies.values())
     plt.bar(labels, values)
     plt.xlabel('Model')
     plt.ylabel('Accuracy')
     plt.title(title + ' Accuracy Comparison')
-    plt.show()
+    if save_path:
+        plt.savefig(save_path)
+        plt.close()
+    else:
+        plt.show()
 
 
-def draw_confusion_matrix_hitmap(y_test, y_pred,title):
+def draw_confusion_matrix_hitmap(y_test, y_pred,title, save_path=None):
     cm_tf = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm_tf, annot=True, fmt='d', cmap='Blues', xticklabels=label_mapping.values(),
@@ -47,15 +44,21 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title):
     plt.title(title+" Confusion Matrix")
     plt.xlabel('Predicted')
     plt.ylabel('True')
-    plt.show()
+    if save_path:
+        plt.savefig(save_path)
+        plt.close()
+    else:
+        plt.show()
 
 
-csv_file = 'training_log.csv'
 
-def log_metrics(model_name, feature_type, acc, class_report):
+
+
+def log_metrics(model_name, feature_type, acc, class_report, train_time,
+                params=None, test_acc=None, cm_path=None,csv_file = 'training_log_new.csv'):
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    header = ['Time', 'Model', 'Feature Type', 'Accuracy', 'Classification Report']
-    data = [current_time, model_name, feature_type, acc, class_report]
+    header = ['Time', 'Model', 'Feature Type', 'Accuracy(val/test)', 'Test Accuracy', 'Classification Report', 'Train Time (s)', 'Best Params', 'Confusion Matrix Path']
+    data = [current_time, model_name, feature_type, acc, test_acc, class_report, train_time, params, cm_path]
     try:
         with open(csv_file, mode='x', newline='') as file:
             writer = csv.writer(file)

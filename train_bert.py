@@ -48,7 +48,8 @@ model.to(device)
 
 training_args = TrainingArguments(
     output_dir='./distilbert_results',
-    evaluation_strategy="epoch",
+    evaluation_strategy="steps",
+    eval_steps=500,
     learning_rate=2e-5,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=32,

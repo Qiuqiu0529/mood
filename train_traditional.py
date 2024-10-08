@@ -14,7 +14,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 
-import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import csv
 
@@ -93,7 +92,7 @@ X_test_bag = selector1.transform(X_test_bag)
 #new
 models = {
     'Softmax': {
-        'model': LogisticRegression( solver='saga', max_iter=1000),# default multi_class='multinomial',
+        'model': LogisticRegression( solver='saga', max_iter=500),# default multi_class='multinomial',
         'params': {
             'C': [0.01, 0.1, 1, 10, 100],
             'penalty': ['l2']
@@ -133,8 +132,10 @@ models = {
 
 def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val, y_val, feature_type):
     print(f"Training {model_name} with {feature_type} features...")
+    start_time = time.time()
     grid = GridSearchCV(model, params, cv=5, scoring='accuracy', n_jobs=-1)
     grid.fit(X_train, y_train)
+    train_time = time.time() - start_time
     print(f"Best parameters for {model_name}: {grid.best_params_}")
 
     best_model = grid.best_estimator_
@@ -143,11 +144,15 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
     print(f"Validation Accuracy for {model_name} with {feature_type} features: {acc}")
     class_report = classification_report(y_val, y_pred)
     print(f"Classification Report:\n{class_report}")
-    # Log metrics
-    train_util.log_metrics(model_name, feature_type, acc, class_report)
+
     # Draw confusion matrix
     title = f"{model_name} ({feature_type})"
-    train_util.draw_confusion_matrix_hitmap(y_val, y_pred, title)
+    cm_path = f"{train_util.default_save_path}/{model_name}_{feature_type}_val_confusion_matrix.png"
+    train_util.draw_confusion_matrix_hitmap(y_val, y_pred, title,cm_path)
+
+    # Log metrics
+    train_util.log_metrics(model_name, feature_type, acc, class_report, train_time, params=grid.best_params_,
+                           cm_path=cm_path)
     return acc
 
 acc_tf = {}
@@ -164,8 +169,8 @@ for model_name, model_info in models.items():
                                    X_train_bag, y_train, X_val_bag, y_val, 'Bag-of-Words')
     acc_bag[model_name] = acc
 
-train_util.draw_accuracy_comparison(acc_tf, 'TF-IDF')
-train_util.draw_accuracy_comparison(acc_bag, 'Bag-of-Words')
+train_util.draw_accuracy_comparison(acc_tf, 'TF-IDF',f"{train_util.default_save_path}/TF-IDF_accuracy_comparison.png")
+train_util.draw_accuracy_comparison(acc_bag, 'Bag-of-Words',f"{train_util.default_save_path}/Bag-of-Words_accuracy_comparison.png")
 
 best_model_name_tf = max(acc_tf, key=acc_tf.get)
 best_model_name_bag = max(acc_bag, key=acc_bag.get)
@@ -192,11 +197,11 @@ grid.fit(X_train_final, y_train)
 best_model = grid.best_estimator_
 y_pred_test = best_model.predict(X_test_final)
 test_acc = accuracy_score(y_test, y_pred_test)
-print(f"Test Accuracy for {best_model_name} with {feature_type} features: {test_acc}")
 test_class_report = classification_report(y_test, y_pred_test)
+print(f"Test Accuracy for {best_model_name} with {feature_type} features: {test_acc}")
 print(f"Test Classification Report:\n{test_class_report}")
-# Log test metrics
-train_util.log_metrics(best_model_name, feature_type + ' Test', test_acc, test_class_report)
-# Draw confusion matrix for test set
-title = f"{best_model_name} ({feature_type}) Test Set"
-train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title)
+
+test_cm_path = f"{train_util.default_save_path}/{best_model_name}_{feature_type}_test_confusion_matrix.png"
+train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title=f"{best_model_name} ({feature_type}) Test Set", save_path=test_cm_path)
+
+train_util.log_metrics(best_model_name, f"{feature_type} Test", test_acc, test_class_report, train_time=0, params=grid.best_params_, test_acc=test_acc, cm_path=test_cm_path)
