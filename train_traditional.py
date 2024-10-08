@@ -150,7 +150,7 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
 
 
     # Log metrics
-    train_util.log_metrics(model_name, feature_type, acc, class_report, train_time, params=grid.best_params_,
+    train_util.log_metrics(model_name, feature_type, acc, class_report, train_time, params=grid.best_params_,test_acc=None,
                            cm_path=cm_path)
     return acc
 
@@ -176,19 +176,21 @@ best_model_name_bag = max(acc_bag, key=acc_bag.get)
 
 print(f"Best model using TF-IDF features: {best_model_name_tf} with accuracy {acc_tf[best_model_name_tf]}")
 print(f"Best model using Bag-of-Words features: {best_model_name_bag} with accuracy {acc_bag[best_model_name_bag]}")
-
+val_acc=0
 if acc_tf[best_model_name_tf] >= acc_bag[best_model_name_bag]:
     feature_type = 'TF-IDF'
     best_model_info = models[best_model_name_tf]
     X_train_final = X_train_tf
     X_test_final = X_test_tf
     best_model_name = best_model_name_tf
+    val_acc=acc_tf[best_model_name_tf]
 else:
     feature_type = 'Bag-of-Words'
     best_model_info = models[best_model_name_bag]
     X_train_final = X_train_bag
     X_test_final = X_test_bag
     best_model_name = best_model_name_bag
+    val_acc = acc_bag[best_model_name_bag]
 
 print(f"Evaluating the best model {best_model_name} with {feature_type} features on the test set...")
 grid = GridSearchCV(best_model_info['model'], best_model_info['params'], cv=5, scoring='accuracy', n_jobs=-1)
@@ -203,4 +205,4 @@ print(f"Test Classification Report:\n{test_class_report}")
 test_cm_path = f"{train_util.default_save_path}/{best_model_name}_{feature_type}_test_confusion_matrix.png"
 train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title=f"{best_model_name} ({feature_type}) Test Set", save_path=test_cm_path)
 
-train_util.log_metrics(best_model_name, f"{feature_type} Test", test_acc, test_class_report, train_time=0, params=grid.best_params_, test_acc=test_acc, cm_path=test_cm_path)
+train_util.log_metrics(best_model_name, f"{feature_type} Test", val_acc, test_class_report, train_time=0, params=grid.best_params_, test_acc=test_acc, cm_path=test_cm_path)

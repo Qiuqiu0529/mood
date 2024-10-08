@@ -100,6 +100,7 @@ traintime=time.time()-starttime
 print("Evaluating on Validation Set...")
 val_metrics = trainer.evaluate()
 val_accuracy = val_metrics['eval_accuracy']
+print(f"Validation Accuracy: {val_accuracy}")
 
 train_losses = [x['loss'] for x in trainer.state.log_history if 'loss' in x]
 eval_accuracies = [x['eval_accuracy'] for x in trainer.state.log_history if 'eval_accuracy' in x]
@@ -125,11 +126,22 @@ test_class_report = classification_report(labels, predictions, target_names=list
 print(f"Test Accuracy: {test_accuracy}")
 print(f"Classification Report:\n{test_class_report}")
 
+
 model.save_pretrained("./best_distilbert_model")
 tokenizer.save_pretrained("./best_distilbert_model")
 print("Model and Tokenizer saved to './best_distilbert_model'")
 
-log_metrics('DistilBERT', 'Test Set', val_accuracy, test_class_report, train_time=0, params=None, test_acc=test_accuracy)
 
 test_cm_path = "./pic/distilbert_test_confusion_matrix.png"
 draw_confusion_matrix_hitmap(labels, predictions, title='DistilBERT Test Set', save_path=test_cm_path)
+
+log_metrics(
+    model_name='DistilBERT',
+    feature_type='Contextualized Word Embeddings, [CLS] Token Output',
+    acc=val_accuracy,
+    class_report=test_class_report,
+    train_time=traintime,
+    params=str(training_args.to_dict()),
+    test_acc=test_accuracy,
+    cm_path=test_cm_path,
+)

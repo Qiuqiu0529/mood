@@ -42,7 +42,7 @@ for param_combination in product(*params.values()):
 
     log_metrics(
         model_name='FastText',
-        feature_type=f"Params: {param_dict}",
+        feature_type='Word Embeddings, Character n-grams',
         acc=val_acc,
         test_acc=None,
         class_report='N/A',
@@ -82,10 +82,10 @@ draw_confusion_matrix_hitmap(true_labels, test_pred, title='FastText Test Set', 
 
 log_metrics(
     model_name='FastText',
-    feature_type='Best Model Test',
+    feature_type='Word Embeddings, Character n-grams',
     acc=best_acc,
     class_report=test_class_report,
-    train_time=0,
+    train_time=traintime,
     params=best_params,
     test_acc=test_acc,
     cm_path=test_cm_path,
@@ -94,10 +94,10 @@ log_metrics(
 
 log_metrics(
     model_name='FastText',
-    feature_type='Best Model Test',
+    feature_type='Word Embeddings, Character n-grams',
     acc=best_acc,
     class_report=test_class_report,
-    train_time=0,
+    train_time=traintime,
     params=best_params,
     test_acc=test_acc,
     cm_path=test_cm_path,

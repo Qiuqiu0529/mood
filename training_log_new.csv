@@ -1,5 +1,5 @@
-Time,Model,Feature Type,Accuracy(val/test),Test Accuracy,Classification Report,Train Time (s),Best Params,Confusion Matrix Path
-2024/10/8 13:00,FastText,Best Model Test,0.84587367,0.849707658,"              precision    recall  f1-score   support
+Time,Model,Feature Type,Val Accuracy,Test Accuracy,Classification Report,Train Time (s),Best Params,Confusion Matrix Path
+2024/10/8 13:00,FastText,"Word Embeddings, Character n-grams",0.84587367,0.849707658,"              precision    recall  f1-score   support
 
      sadness       0.86      0.83      0.85      1743
          joy       0.79      0.79      0.79      1600
@@ -11,21 +11,21 @@ Time,Model,Feature Type,Accuracy(val/test),Test Accuracy,Classification Report,T
     accuracy                           0.85     10433
    macro avg       0.85      0.85      0.85     10433
 weighted avg       0.85      0.85      0.85     10433
-",0,"{'lr': 0.5, 'epoch': 50, 'wordNgrams': 3, 'dim': 200, 'loss': 'ova'}",pic/FastText_Test_Confusion_Matrix.png
-2024/10/8 13:39,DistilBERT,Test Set,0.877791623,0.876641426,"              precision    recall  f1-score   support
+",3.438545942,"{'lr': 0.5, 'epoch': 50, 'wordNgrams': 3, 'dim': 200, 'loss': 'ova'}",pic/FastText_Test_Confusion_Matrix.png
+2024/10/8 15:48,DistilBERT,"Contextualized Word Embeddings, [CLS] Token Output",0.876737276,0.879229368,"              precision    recall  f1-score   support
 
-     sadness       0.90      0.84      0.87      1743
-         joy       0.88      0.77      0.82      1600
-        love       0.85      0.90      0.87      1725
+     sadness       0.89      0.84      0.87      1743
+         joy       0.88      0.78      0.82      1600
+        love       0.86      0.90      0.88      1725
        anger       0.90      0.91      0.90      1810
-        fear       0.88      0.85      0.86      1762
+        fear       0.88      0.85      0.87      1762
     surprise       0.87      0.98      0.92      1793
 
     accuracy                           0.88     10433
-   macro avg       0.88      0.87      0.87     10433
+   macro avg       0.88      0.88      0.88     10433
 weighted avg       0.88      0.88      0.88     10433
-",0,,
-2024-10-08 13:47:44,Softmax,TF-IDF,0.8583341320808971,,"              precision    recall  f1-score   support
+",384.7689166,"{'output_dir': './distilbert_results', 'overwrite_output_dir': False, 'do_train': False, 'do_eval': True, 'do_predict': False, 'eval_strategy': 'steps', 'prediction_loss_only': False, 'per_device_train_batch_size': 16, 'per_device_eval_batch_size': 32, 'per_gpu_train_batch_size': None, 'per_gpu_eval_batch_size': None, 'gradient_accumulation_steps': 2, 'eval_accumulation_steps': None, 'eval_delay': 0, 'torch_empty_cache_steps': None, 'learning_rate': 2e-05, 'weight_decay': 0.01, 'adam_beta1': 0.9, 'adam_beta2': 0.999, 'adam_epsilon': 1e-08, 'max_grad_norm': 1.0, 'num_train_epochs': 3, 'max_steps': -1, 'lr_scheduler_type': 'linear', 'lr_scheduler_kwargs': {}, 'warmup_ratio': 0.0, 'warmup_steps': 0, 'log_level': 'passive', 'log_level_replica': 'warning', 'log_on_each_node': True, 'logging_dir': './distilbert_logs', 'logging_strategy': 'steps', 'logging_first_step': False, 'logging_steps': 10, 'logging_nan_inf_filter': True, 'save_strategy': 'steps', 'save_steps': 500, 'save_total_limit': 3, 'save_safetensors': True, 'save_on_each_node': False, 'save_only_model': False, 'restore_callback_states_from_checkpoint': False, 'no_cuda': False, 'use_cpu': False, 'use_mps_device': False, 'seed': 42, 'data_seed': None, 'jit_mode_eval': False, 'use_ipex': False, 'bf16': False, 'fp16': True, 'fp16_opt_level': 'O1', 'half_precision_backend': 'auto', 'bf16_full_eval': False, 'fp16_full_eval': False, 'tf32': None, 'local_rank': 0, 'ddp_backend': None, 'tpu_num_cores': None, 'tpu_metrics_debug': False, 'debug': [], 'dataloader_drop_last': False, 'eval_steps': 500, 'dataloader_num_workers': 0, 'dataloader_prefetch_factor': None, 'past_index': -1, 'run_name': './distilbert_results', 'disable_tqdm': False, 'remove_unused_columns': True, 'label_names': None, 'load_best_model_at_end': True, 'metric_for_best_model': 'accuracy', 'greater_is_better': True, 'ignore_data_skip': False, 'fsdp': [], 'fsdp_min_num_params': 0, 'fsdp_config': {'min_num_params': 0, 'xla': False, 'xla_fsdp_v2': False, 'xla_fsdp_grad_ckpt': False}, 'fsdp_transformer_layer_cls_to_wrap': None, 'accelerator_config': {'split_batches': False, 'dispatch_batches': None, 'even_batches': True, 'use_seedable_sampler': True, 'non_blocking': False, 'gradient_accumulation_kwargs': None}, 'deepspeed': None, 'label_smoothing_factor': 0.0, 'optim': 'adamw_torch', 'optim_args': None, 'adafactor': False, 'group_by_length': False, 'length_column_name': 'length', 'report_to': [], 'ddp_find_unused_parameters': None, 'ddp_bucket_cap_mb': None, 'ddp_broadcast_buffers': None, 'dataloader_pin_memory': True, 'dataloader_persistent_workers': False, 'skip_memory_metrics': True, 'use_legacy_prediction_loop': False, 'push_to_hub': False, 'resume_from_checkpoint': True, 'hub_model_id': None, 'hub_strategy': 'every_save', 'hub_token': '<HUB_TOKEN>', 'hub_private_repo': False, 'hub_always_push': False, 'gradient_checkpointing': False, 'gradient_checkpointing_kwargs': None, 'include_inputs_for_metrics': False, 'eval_do_concat_batches': True, 'fp16_backend': 'auto', 'evaluation_strategy': 'steps', 'push_to_hub_model_id': None, 'push_to_hub_organization': None, 'push_to_hub_token': '<PUSH_TO_HUB_TOKEN>', 'mp_parameters': '', 'auto_find_batch_size': False, 'full_determinism': False, 'torchdynamo': None, 'ray_scope': 'last', 'ddp_timeout': 1800, 'torch_compile': False, 'torch_compile_backend': None, 'torch_compile_mode': None, 'dispatch_batches': None, 'split_batches': None, 'include_tokens_per_second': False, 'include_num_input_tokens_seen': False, 'neftune_noise_alpha': None, 'optim_target_modules': None, 'batch_eval_metrics': False, 'eval_on_start': False, 'use_liger_kernel': False, 'eval_use_gather_object': False}",./pic/distilbert_test_confusion_matrix.png
+2024/10/8 16:07,Softmax,TF-IDF,0.858334132,,"              precision    recall  f1-score   support
 
            0       0.87      0.82      0.84      1719
            1       0.83      0.78      0.80      1716
@@ -37,8 +37,8 @@ weighted avg       0.88      0.88      0.88     10433
     accuracy                           0.86     10433
    macro avg       0.86      0.86      0.86     10433
 weighted avg       0.86      0.86      0.86     10433
-",7.974609375,"{'C': 1, 'penalty': 'l2'}",pic/Softmax_TF-IDF_val_confusion_matrix.png
-2024-10-08 13:47:44,Naive Bayes,TF-IDF,0.8152976133422793,,"              precision    recall  f1-score   support
+",7.993656158,"{'C': 1, 'penalty': 'l2'}",pic/Softmax_TF-IDF_val_confusion_matrix.png
+2024/10/8 16:07,Naive Bayes,TF-IDF,0.815297613,,"              precision    recall  f1-score   support
 
            0       0.83      0.81      0.82      1719
            1       0.74      0.77      0.75      1716
@@ -50,8 +50,8 @@ weighted avg       0.86      0.86      0.86     10433
     accuracy                           0.82     10433
    macro avg       0.82      0.82      0.82     10433
 weighted avg       0.82      0.82      0.82     10433
-",0.21560359001159668,{'alpha': 1.0},pic/Naive Bayes_TF-IDF_val_confusion_matrix.png
-2024-10-08 13:48:16,KNN,TF-IDF,0.722706795744273,,"              precision    recall  f1-score   support
+",0.214324713,{'alpha': 1.0},pic/Naive Bayes_TF-IDF_val_confusion_matrix.png
+2024/10/8 16:07,KNN,TF-IDF,0.722706796,,"              precision    recall  f1-score   support
 
            0       0.73      0.73      0.73      1719
            1       0.65      0.69      0.67      1716
@@ -63,21 +63,21 @@ weighted avg       0.82      0.82      0.82     10433
     accuracy                           0.72     10433
    macro avg       0.72      0.72      0.72     10433
 weighted avg       0.73      0.72      0.72     10433
-",27.3293616771698,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_TF-IDF_val_confusion_matrix.png
-2024-10-08 13:48:55,Decision Tree,TF-IDF,0.8008243074858622,,"              precision    recall  f1-score   support
+",26.52728295,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_TF-IDF_val_confusion_matrix.png
+2024/10/8 16:08,Decision Tree,TF-IDF,0.796894469,,"              precision    recall  f1-score   support
 
-           0       0.78      0.77      0.78      1719
-           1       0.79      0.70      0.74      1716
-           2       0.77      0.83      0.80      1781
-           3       0.84      0.83      0.83      1756
-           4       0.78      0.79      0.79      1702
+           0       0.79      0.77      0.78      1719
+           1       0.77      0.69      0.73      1716
+           2       0.77      0.82      0.79      1781
+           3       0.83      0.84      0.84      1756
+           4       0.77      0.79      0.78      1702
            5       0.85      0.87      0.86      1759
 
     accuracy                           0.80     10433
    macro avg       0.80      0.80      0.80     10433
 weighted avg       0.80      0.80      0.80     10433
-",38.38498568534851,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_TF-IDF_val_confusion_matrix.png
-2024-10-08 13:49:17,Softmax,Bag-of-Words,0.8592926291574811,,"              precision    recall  f1-score   support
+",35.06609869,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_TF-IDF_val_confusion_matrix.png
+2024/10/8 16:08,Softmax,Bag-of-Words,0.859292629,,"              precision    recall  f1-score   support
 
            0       0.87      0.83      0.85      1719
            1       0.81      0.78      0.80      1716
@@ -89,8 +89,8 @@ weighted avg       0.80      0.80      0.80     10433
     accuracy                           0.86     10433
    macro avg       0.86      0.86      0.86     10433
 weighted avg       0.86      0.86      0.86     10433
-",21.849181175231934,"{'C': 0.1, 'penalty': 'l2'}",pic/Softmax_Bag-of-Words_val_confusion_matrix.png
-2024-10-08 13:49:17,Naive Bayes,Bag-of-Words,0.8177897057413975,,"              precision    recall  f1-score   support
+",21.33652949,"{'C': 0.1, 'penalty': 'l2'}",pic/Softmax_Bag-of-Words_val_confusion_matrix.png
+2024/10/8 16:08,Naive Bayes,Bag-of-Words,0.817789706,,"              precision    recall  f1-score   support
 
            0       0.83      0.81      0.82      1719
            1       0.76      0.75      0.75      1716
@@ -102,8 +102,8 @@ weighted avg       0.86      0.86      0.86     10433
     accuracy                           0.82     10433
    macro avg       0.82      0.82      0.82     10433
 weighted avg       0.82      0.82      0.82     10433
-",0.1860668659210205,{'alpha': 1.0},pic/Naive Bayes_Bag-of-Words_val_confusion_matrix.png
-2024-10-08 13:49:49,KNN,Bag-of-Words,0.7212690501293971,,"              precision    recall  f1-score   support
+",0.206751108,{'alpha': 1.0},pic/Naive Bayes_Bag-of-Words_val_confusion_matrix.png
+2024/10/8 16:09,KNN,Bag-of-Words,0.72126905,,"              precision    recall  f1-score   support
 
            0       0.66      0.70      0.68      1719
            1       0.59      0.68      0.63      1716
@@ -115,21 +115,21 @@ weighted avg       0.82      0.82      0.82     10433
     accuracy                           0.72     10433
    macro avg       0.73      0.72      0.72     10433
 weighted avg       0.73      0.72      0.72     10433
-",27.390056133270264,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_Bag-of-Words_val_confusion_matrix.png
-2024-10-08 13:50:16,Decision Tree,Bag-of-Words,0.8146266653886706,,"              precision    recall  f1-score   support
+",25.98152256,"{'n_neighbors': 7, 'weights': 'distance'}",pic/KNN_Bag-of-Words_val_confusion_matrix.png
+2024/10/8 16:09,Decision Tree,Bag-of-Words,0.815297613,,"              precision    recall  f1-score   support
 
            0       0.81      0.78      0.79      1719
            1       0.79      0.73      0.76      1716
-           2       0.79      0.83      0.81      1781
-           3       0.85      0.85      0.85      1756
-           4       0.78      0.81      0.79      1702
-           5       0.86      0.88      0.87      1759
+           2       0.79      0.84      0.81      1781
+           3       0.86      0.85      0.85      1756
+           4       0.78      0.81      0.80      1702
+           5       0.86      0.87      0.87      1759
 
-    accuracy                           0.81     10433
-   macro avg       0.81      0.81      0.81     10433
-weighted avg       0.81      0.81      0.81     10433
-",26.762856245040894,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_Bag-of-Words_val_confusion_matrix.png
-2024-10-08 13:50:39,Softmax,Bag-of-Words Test,0.8607303747723569,0.8607303747723569,"              precision    recall  f1-score   support
+    accuracy                           0.82     10433
+   macro avg       0.82      0.81      0.81     10433
+weighted avg       0.82      0.82      0.81     10433
+",24.26822519,"{'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 10}",pic/Decision Tree_Bag-of-Words_val_confusion_matrix.png
+2024/10/8 16:09,Softmax,Bag-of-Words Test,0.859292629,0.860730375,"              precision    recall  f1-score   support
 
            0       0.86      0.82      0.84      1743
            1       0.82      0.79      0.81      1600

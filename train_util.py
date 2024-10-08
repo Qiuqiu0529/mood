@@ -69,7 +69,7 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title,  save_path=None,csv_save_
 def log_metrics(model_name, feature_type, acc, class_report, train_time,
                 params=None, test_acc=None, cm_path=None,csv_file = 'training_log_new.csv'):
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    header = ['Time', 'Model', 'Feature Type', 'Accuracy(val/test)', 'Test Accuracy', 'Classification Report', 'Train Time (s)', 'Best Params', 'Confusion Matrix Path']
+    header = ['Time', 'Model', 'Feature Type', 'Val Accuracy', 'Test Accuracy', 'Classification Report', 'Train Time (s)', 'Best Params', 'Confusion Matrix Path']
     data = [current_time, model_name, feature_type, acc, test_acc, class_report, train_time, params, cm_path]
     try:
         with open(csv_file, mode='x', newline='') as file:
