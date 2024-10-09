@@ -81,6 +81,19 @@ def log_metrics(model_name, feature_type, acc, class_report, train_time,
             writer = csv.writer(file)
             writer.writerow(data)
 
+def get_train_time_from_log(model_name, feature_type, log_file="training_log_new.csv"):
+    try:
+        log_df = pd.read_csv(log_file)
+        log_entry = log_df[(log_df['Model'] == model_name) & (log_df['Feature Type'] == feature_type)]
+        if not log_entry.empty:
+            return log_entry['Train Time (s)'].values[0]
+        else:
+            return 0
+    except FileNotFoundError:
+        print(f"Log file '{log_file}' not found.")
+        return 0
+
+
 def load_data(file_path):
     df = pd.read_csv(file_path)
     print(len(df))

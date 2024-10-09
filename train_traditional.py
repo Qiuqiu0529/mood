@@ -157,6 +157,7 @@ def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val,
 acc_tf = {}
 acc_bag = {}
 
+
 for model_name, model_info in models.items():
     acc = train_and_evaluate_model(model_name, model_info['model'], model_info['params'],
                                    X_train_tf, y_train, X_val_tf, y_val, 'TF-IDF')
@@ -205,4 +206,5 @@ print(f"Test Classification Report:\n{test_class_report}")
 test_cm_path = f"{train_util.default_save_path}/{best_model_name}_{feature_type}_test_confusion_matrix.png"
 train_util.draw_confusion_matrix_hitmap(y_test, y_pred_test, title=f"{best_model_name} ({feature_type}) Test Set", save_path=test_cm_path)
 
-train_util.log_metrics(best_model_name, f"{feature_type} Test", val_acc, test_class_report, train_time=0, params=grid.best_params_, test_acc=test_acc, cm_path=test_cm_path)
+final_train_time = train_util.get_train_time_from_log(best_model_name, feature_type)
+train_util.log_metrics(best_model_name, feature_type, val_acc, test_class_report, train_time=final_train_time, params=grid.best_params_, test_acc=test_acc, cm_path=test_cm_path)
