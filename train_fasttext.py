@@ -1,9 +1,10 @@
 import time
 
 import fasttext
+import numpy as np
 from itertools import product
 from train_util import draw_confusion_matrix_hitmap,split_data,log_metrics,default_save_path,label_mapping
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score,log_loss
 
 X_train, X_val, X_test, y_train, y_val, y_test = split_data()
 
@@ -43,12 +44,10 @@ for param_combination in product(*params.values()):
     log_metrics(
         model_name='FastText',
         feature_type='Word Embeddings, Character n-grams',
-        acc=val_acc,
-        test_acc=None,
+        val_acc=val_acc,
         class_report='N/A',
         train_time=traintime,  # 这里可以添加更精确的训练时间记录
         params=param_dict,
-        cm_path=None,
         csv_file='training_log_fasttext.csv'
     )
 
@@ -59,46 +58,71 @@ starttime=time.time()
 best_model = fasttext.train_supervised(input='fasttext_train.txt', **best_params)
 traintime=time.time()-starttime
 
+def construct_prob_matrix(model, X, label_mapping):
+    prob_matrix = []
+    for text in X:
+        labels, confidences = model.predict(text, k=len(label_mapping))
+        # 构建初始概率向量
+        prob_vector = np.zeros(len(label_mapping))
+        # 填充对应标签的概率
+        for label, confidence in zip(labels, confidences):
+            label_index = int(label.replace('__label__', ''))
+            prob_vector[label_index] = confidence
+        prob_matrix.append(prob_vector)
+    return np.array(prob_matrix)
+
+
+train_prob_matrix = construct_prob_matrix(best_model, X_train, label_mapping)
+train_loss = log_loss(y_train, train_prob_matrix)
+train_acc = accuracy_score(y_train, np.argmax(train_prob_matrix, axis=1))
+
+val_prob_matrix = construct_prob_matrix(best_model, X_val, label_mapping)
+val_loss = log_loss(y_val, val_prob_matrix)
+
 test_result = best_model.test('fasttext_test.txt')
 test_acc = test_result[1]
 print(f"Test Accuracy: {test_acc}")
 
-test_pred = []
-true_labels = []
-with open('fasttext_test.txt', 'r') as f:
-    for line in f:
-        split_line = line.split(' ', 1)
-        true_label = int(split_line[0].replace('__label__', '').strip())
-        text = split_line[1].strip()
-        pred_label = best_model.predict(text)[0][0].replace('__label__', '')
-        test_pred.append(int(pred_label))
-        true_labels.append(true_label)
+test_prob_matrix = construct_prob_matrix(best_model, X_test, label_mapping)
+test_log_loss_value = log_loss(y_test, test_prob_matrix)
 
-test_class_report = classification_report(true_labels, test_pred, target_names=list(label_mapping.values()))
+test_pred = np.argmax(test_prob_matrix, axis=1)
+test_class_report = classification_report(y_test, test_pred, target_names=list(label_mapping.values()))
 print(f"Test Classification Report:\n{test_class_report}")
 
+
 test_cm_path = f"{default_save_path}/FastText_Test_Confusion_Matrix.png"
-draw_confusion_matrix_hitmap(true_labels, test_pred, title='FastText Test Set', save_path=test_cm_path)
+draw_confusion_matrix_hitmap(y_test, test_pred, title='FastText Test Set', save_path=test_cm_path)
+
 
 log_metrics(
     model_name='FastText',
     feature_type='Word Embeddings, Character n-grams',
-    acc=best_acc,
+    val_acc=best_acc,
+    train_acc=train_acc,
+    train_loss=train_loss,
+    val_loss=val_loss,
+    test_acc=test_acc,
+    test_log_loss=test_log_loss_value,
     class_report=test_class_report,
     train_time=traintime,
     params=best_params,
-    test_acc=test_acc,
     cm_path=test_cm_path,
     csv_file='training_log_fasttext.csv'
 )
 
+
 log_metrics(
     model_name='FastText',
     feature_type='Word Embeddings, Character n-grams',
-    acc=best_acc,
+    val_acc=best_acc,
+    train_acc=train_acc,
+    train_loss=train_loss,
+    val_loss=val_loss,
+    test_acc=test_acc,
+    test_log_loss=test_log_loss_value,
     class_report=test_class_report,
     train_time=traintime,
     params=best_params,
-    test_acc=test_acc,
     cm_path=test_cm_path,
 )

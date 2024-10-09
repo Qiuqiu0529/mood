@@ -1,0 +1,7 @@
+Class,Precision,Recall,F1-Score,Support,True Positive (TP),False Positive (FP),False Negative (FN),Most Misclassified As,Misclassified Count
+sadness,0.86,0.82,0.84,1743,1421,229,322,joy,90
+joy,0.82,0.79,0.81,1600,1266,275,334,love,156
+love,0.85,0.86,0.86,1725,1492,254,233,joy,121
+anger,0.89,0.87,0.88,1810,1582,188,228,fear,75
+fear,0.87,0.83,0.85,1762,1466,221,296,surprise,157
+surprise,0.86,0.98,0.91,1793,1753,286,40,fear,25
