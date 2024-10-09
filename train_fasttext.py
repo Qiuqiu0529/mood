@@ -62,9 +62,9 @@ def construct_prob_matrix(model, X, label_mapping):
     prob_matrix = []
     for text in X:
         labels, confidences = model.predict(text, k=len(label_mapping))
-        # 构建初始概率向量
+
         prob_vector = np.zeros(len(label_mapping))
-        # 填充对应标签的概率
+
         for label, confidence in zip(labels, confidences):
             label_index = int(label.replace('__label__', ''))
             prob_vector[label_index] = confidence

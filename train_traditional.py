@@ -131,13 +131,16 @@ models = {
 
 def train_and_evaluate_model(model_name, model, params, X_train, y_train, X_val, y_val, feature_type):
     print(f"Training {model_name} with {feature_type} features...")
-    start_time = time.time()
+    search_start_time = time.time()
     grid = GridSearchCV(model, params, cv=5, scoring='accuracy', n_jobs=-1)
     grid.fit(X_train, y_train)
-    train_time = time.time() - start_time
+    search_time = time.time() - search_start_time
     print(f"Best parameters for {model_name}: {grid.best_params_}")
 
     best_model = grid.best_estimator_
+    train_start_time = time.time()
+    best_model.fit(X_train, y_train)
+    train_time = time.time() - train_start_time
 
     y_train_pred = best_model.predict(X_train)
     train_acc = accuracy_score(y_train, y_train_pred)
