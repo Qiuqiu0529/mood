@@ -1,9 +1,9 @@
 import nltk
 from nltk.stem import WordNetLemmatizer
-from  train_util import get_train_time_from_log
+from  train_util import get_train_time_from_log,split_data
 
-
-print(get_train_time_from_log('Softmax','Bag-of-Words'))
+split_data()
+# print(get_train_time_from_log('Softmax','Bag-of-Words'))
 
 # with open('stopwords-en.txt', 'r',encoding='utf-8') as f:
 #     stop_words = set(f.read().splitlines())
