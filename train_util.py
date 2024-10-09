@@ -66,20 +66,35 @@ def draw_confusion_matrix_hitmap(y_test, y_pred,title,  save_path=None,csv_save_
             cm_with_info.to_csv(csv_save_path, index=True, header=True, encoding='utf-8-sig')
         print(f"Confusion matrix CSV for {title} saved to: {csv_save_path}")
 
-def log_metrics(model_name, feature_type, acc, class_report, train_time,
-                params=None, test_acc=None, cm_path=None,csv_file = 'training_log_new.csv'):
+
+def log_metrics(model_name, feature_type, val_acc, class_report, train_time,
+                train_acc=None, val_loss=None, train_loss=None,
+                params=None, test_acc=None, test_log_loss=None, cm_path=None, csv_file='training_log_new.csv'):
+
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    header = ['Time', 'Model', 'Feature Type', 'Val Accuracy', 'Test Accuracy', 'Classification Report', 'Train Time (s)', 'Best Params', 'Confusion Matrix Path']
-    data = [current_time, model_name, feature_type, acc, test_acc, class_report, train_time, params, cm_path]
+
+    header = [
+        'Time', 'Model', 'Feature Type', 'Train Accuracy', 'Train Log Loss',
+        'Val Accuracy', 'Val Log Loss', 'Test Accuracy', 'Test Log Loss',
+        'Classification Report', 'Train Time (s)', 'Best Params', 'Confusion Matrix Path'
+    ]
+    data = [
+        current_time, model_name, feature_type, train_acc, train_loss,
+        val_acc, val_loss, test_acc, test_log_loss, class_report,
+        train_time, params, cm_path
+    ]
     try:
-        with open(csv_file, mode='x', newline='') as file:
+        with open(csv_file, mode='x', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerow(data)
+
     except FileExistsError:
-        with open(csv_file, mode='a', newline='') as file:
+        with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(data)
+
+    print(f"Metrics for {model_name} with {feature_type} features logged successfully to '{csv_file}'.")
 
 def get_train_time_from_log(model_name, feature_type, log_file="training_log_new.csv"):
     try:

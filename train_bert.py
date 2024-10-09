@@ -8,7 +8,7 @@ import torch
 from sklearn.model_selection import train_test_split
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, Trainer, TrainingArguments
 from transformers import DataCollatorWithPadding
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report,log_loss
 from datasets import Dataset
 from train_util import draw_confusion_matrix_hitmap,split_data,label_mapping,log_metrics
 
@@ -97,14 +97,28 @@ starttime=time.time()
 train_output = trainer.train()
 traintime=time.time()-starttime
 
+train_outputs = trainer.predict(train_dataset)
+train_logits, train_labels = train_outputs.predictions, train_outputs.label_ids
+train_probabilities = torch.softmax(torch.tensor(train_logits), dim=-1).numpy()
+train_loss = log_loss(train_labels, train_probabilities)
+train_acc = accuracy_score(train_labels, np.argmax(train_probabilities, axis=1))
+
+
 print("Evaluating on Validation Set...")
 val_metrics = trainer.evaluate()
 val_accuracy = val_metrics['eval_accuracy']
-print(f"Validation Accuracy: {val_accuracy}")
+
+val_outputs = trainer.predict(val_dataset)
+val_logits, val_labels = val_outputs.predictions, val_outputs.label_ids
+val_probabilities = torch.softmax(torch.tensor(val_logits), dim=-1).numpy()
+val_loss = log_loss(val_labels, val_probabilities)
 
 train_losses = [x['loss'] for x in trainer.state.log_history if 'loss' in x]
 eval_accuracies = [x['eval_accuracy'] for x in trainer.state.log_history if 'eval_accuracy' in x]
 
+
+train_losses = [x['loss'] for x in trainer.state.log_history if 'loss' in x]
+eval_accuracies = [x['eval_accuracy'] for x in trainer.state.log_history if 'eval_accuracy' in x]
 train_steps = range(len(train_losses))
 eval_steps = [i for i, x in enumerate(trainer.state.log_history) if 'eval_accuracy' in x]
 
@@ -119,12 +133,14 @@ plt.savefig('pic/distilbert_accuracy_curve.png')
 plt.close()
 
 print("Evaluating on Test Set...")
-predictions, labels, _ = trainer.predict(test_dataset)
-predictions = torch.argmax(torch.tensor(predictions), dim=1)
-test_accuracy = accuracy_score(labels, predictions)
-test_class_report = classification_report(labels, predictions, target_names=list(label_mapping.values()))
-print(f"Test Accuracy: {test_accuracy}")
-print(f"Classification Report:\n{test_class_report}")
+test_outputs = trainer.predict(test_dataset)
+test_logits, test_labels = test_outputs.predictions, test_outputs.label_ids
+test_probabilities = torch.softmax(torch.tensor(test_logits), dim=-1).numpy()
+test_loss = log_loss(test_labels, test_probabilities)
+test_predictions = np.argmax(test_probabilities, axis=1)
+
+test_accuracy = accuracy_score(test_labels, test_predictions)
+test_class_report = classification_report(test_labels, test_predictions, target_names=list(label_mapping.values()))
 
 
 model.save_pretrained("./best_distilbert_model")
@@ -133,15 +149,19 @@ print("Model and Tokenizer saved to './best_distilbert_model'")
 
 
 test_cm_path = "./pic/distilbert_test_confusion_matrix.png"
-draw_confusion_matrix_hitmap(labels, predictions, title='DistilBERT Test Set', save_path=test_cm_path)
+draw_confusion_matrix_hitmap(test_labels, test_predictions, title='DistilBERT Test Set', save_path=test_cm_path)
 
 log_metrics(
     model_name='DistilBERT',
     feature_type='Contextualized Word Embeddings, [CLS] Token Output',
-    acc=val_accuracy,
+    val_acc=val_accuracy,
+    train_acc=train_acc,
+    train_loss=train_loss,
+    val_loss=val_loss,
+    test_acc=test_accuracy,
+    test_log_loss=test_loss,
     class_report=test_class_report,
     train_time=traintime,
     params=str(training_args.to_dict()),
-    test_acc=test_accuracy,
     cm_path=test_cm_path,
 )
